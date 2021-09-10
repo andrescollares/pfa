@@ -21,7 +21,7 @@ arbitraryTree 0 = return Empty
 arbitraryTree n =
   frequency
     [ (1, return Empty),
-      (4, liftM3 Node (arbitraryTree (n `div` 2)) arbitrary (arbitraryTree (n `div` 2)))
+      (5, liftM3 Node (arbitraryTree (n `div` 2)) arbitrary (arbitraryTree (n `div` 2)))
     ]
 
 mirror :: Tree a -> Tree a

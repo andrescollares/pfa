@@ -4,10 +4,22 @@ import Test.QuickCheck
 esPalindromo :: (Eq a) => [a] -> Bool
 esPalindromo l = l == reverse l
 
-esPalindromo' :: (Eq a) => Palindrome a -> Bool
-esPalindromo' (P l) = l == reverse l
-
 -- b)
+
+
+-- c)
+
+implies :: Bool -> Bool -> Bool
+implies x y = not x || y
+
+palindromoConcatIsPalindromo :: (Eq a) => [a] -> Bool
+palindromoConcatIsPalindromo l = esPalindromo l `implies` esPalindromo (l ++ l)
+
+iEPC :: [Int] -> Property 
+iEPC xs = esPalindromo xs ==> esPalindromo (xs ++ xs)  
+
+-- quickCheckWith stdArgs { maxSuccess = 200, maxDiscardRatio = 100000000000 } iEPC
+
 data Palindrome a = P [a]
   deriving (Eq, Show)
 
@@ -31,10 +43,6 @@ arbitraryPalindrome n =
       )
     ]
 
--- c)
+esPalindromo' :: (Eq a) => Palindrome a -> Bool
+esPalindromo' (P l) = l == reverse l
 
-implies :: Bool -> Bool -> Bool
-implies x y = not x || y
-
-palindromoConcatIsPalindromo :: (Eq a) => [a] -> Bool
-palindromoConcatIsPalindromo l = esPalindromo l `implies` esPalindromo (l ++ l)

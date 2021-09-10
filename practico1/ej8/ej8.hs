@@ -1,13 +1,17 @@
+-- import Data.List (foldl')
+
 -- modificar esta variable para la ejecución, comentar el código en base a la parte a ejecutar
-n = 100
+n = 1000000
 
 -- (a)
 main = print $ f [1 .. n]
 
 -- i.
-f = foldl (flip (:)) [ ]
+-- f = foldl (flip (:)) [ ]
+-- i'.
+-- f = foldl' (flip (:)) []
 -- ii.
---f ≡ foldr (\x r -> r ++ [x]) [ ]
+f = foldr (\x r -> r ++ [x]) []
  
 -- (b)
 -- main = print $ f [1 .. n] [1 .. n]

@@ -1,0 +1,30 @@
+	Fri Sep 10 17:03 2021 Time and Allocation Profiling Report  (Final)
+
+	   ej8_b_ii +RTS -p -hc -RTS
+
+	total time  =        1.37 secs   (1367 ticks @ 1000 us, 1 processor)
+	total alloc = 963,946,944 bytes  (excludes profiling overheads)
+
+COST CENTRE MODULE SRC              %time %alloc
+
+main        Main   ej8.hs:13:1-34    94.7   84.2
+f.\         Main   ej8.hs:18:20-28    3.9   11.6
+f           Main   ej8.hs:18:1-32     1.5    4.1
+
+
+                                                                      individual      inherited
+COST CENTRE  MODULE                SRC             no.     entries  %time %alloc   %time %alloc
+
+MAIN         MAIN                  <built-in>      120           0    0.0    0.0   100.0  100.0
+ CAF         Main                  <entire-module> 239           0    0.0    0.0    18.6   99.5
+  f          Main                  ej8.hs:18:1-32  242           1    0.0    0.0     0.0    0.0
+  main       Main                  ej8.hs:13:1-34  240           1   13.2   83.7    18.6   99.5
+   f         Main                  ej8.hs:18:1-32  243           0    1.5    4.1     5.3   15.8
+    f.\      Main                  ej8.hs:18:20-28 245     1000000    3.9   11.6     3.9   11.6
+  n          Main                  ej8.hs:2:1-11   244           1    0.0    0.0     0.0    0.0
+ CAF         GHC.Conc.Signal       <entire-module> 231           0    0.0    0.0     0.0    0.0
+ CAF         GHC.IO.Encoding       <entire-module> 220           0    0.0    0.0     0.0    0.0
+ CAF         GHC.IO.Encoding.Iconv <entire-module> 218           0    0.0    0.0     0.0    0.0
+ CAF         GHC.IO.Handle.FD      <entire-module> 210           0    0.0    0.0     0.0    0.0
+ CAF         GHC.IO.Handle.Text    <entire-module> 148           0    0.0    0.0     0.0    0.0
+ main        Main                  ej8.hs:13:1-34  241           0   81.4    0.5    81.4    0.5

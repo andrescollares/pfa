@@ -30,4 +30,14 @@ fromToTree b e =
     )
     (e - b, b)
 
--- cuando n se vuelve 0 entonces se generaron todos los nodos necesarios.
+-- en el par (n, x), n = cantidad de nodos que faltan generar  
+--                   x = contiene información respecto al nodo o nodos a generar
+
+-- c)
+
+--  implementa la función map para Tree
+mapTree :: (a -> b) -> Tree a -> Tree b
+mapTree f = unfoldTree gMapT
+    where 
+        gMapT (Leaf x) = Left (f x)
+        gMapT (Bin l r) = Right (l, r)

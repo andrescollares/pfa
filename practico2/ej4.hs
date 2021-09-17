@@ -11,7 +11,6 @@ a2 = Succ (Succ (Zero (Node2 (Node2 () 2 ()) 20 (Node2 () 40 ()))))
 a3 = Succ (Succ (Succ (Zero (Node2 (Node2 (Node2 () 1 ()) 10 (Node2 () 15 ())) 20 (Node3 (Node2 () 25 ()) 30 (Node2 () 35 ()) 40 (Node2 () 45 ()))))))
 
 -- b)
--- DUDA: Esta bien forzar que t y a sean Show?
 
 instance (Show t, Show a) => Show (Tree t a) where
   show (Zero t) = show t
@@ -20,11 +19,6 @@ instance (Show t, Show a) => Show (Tree t a) where
 instance (Show t, Show a) => Show (Node t a) where
   show (Node2 l x r) = "[ " ++ show l ++ " <- " ++ show x ++ " -> " ++ show r ++ " ]"
   show (Node3 l x m y r) = "[ " ++ show l ++ " <- " ++ show x ++ " ( " ++ show m ++ " ) " ++ show y ++ " -> " ++ show r ++ " ]"
-
-{- show (Node2 l x r) = replicate (length (show l)) ' ' ++ show x ++ "\n" ++
-                     show l ++ replicate (length (show x)) ' ' ++ show r
-show (Node3 l x m y r) = replicate (length (show l)) ' ' ++ show x ++ replicate (length (show m)) ' '++ show y ++ "\n" ++
-                         show l ++ replicate (length (show x)) ' ' ++ show m ++ replicate (length (show y)) ' ' ++ show r -}
 
 -- c)
 -- DUDA: Deben aplicarse sobre STree o sobre Tree t a?
@@ -57,7 +51,7 @@ instance (Cant t) => Cant (Tree t a) where
 
 instance (Cant t) => Cant (Node t a) where
   cant (Node2 l x r) = 1 + cant l + cant r
-  cant (Node3 l x m y r) = 2 + cant l + cant m + cant r
+  cant (Node3 l x m y r) = 1 + cant l + cant m + cant r
 
 instance Cant () where
   cant _ = 0

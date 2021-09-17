@@ -24,13 +24,13 @@ fromToTree :: Int -> Int -> Tree Int
 fromToTree b e =
   unfoldTree
     ( \(n, x) ->
-        if n < 1 
+        if n < 1
           then Left x
           else Right ((n `div` 2, x), (n `div` 2, x + (n `div` 2) + 1))
     )
     (e - b, b)
 
--- en el par (n, x), n = cantidad de nodos que faltan generar  
+-- en el par (n, x), n = cantidad de nodos que faltan generar
 --                   x = contiene información respecto al nodo o nodos a generar
 
 -- c)
@@ -38,6 +38,6 @@ fromToTree b e =
 --  implementa la función map para Tree
 mapTree :: (a -> b) -> Tree a -> Tree b
 mapTree f = unfoldTree gMapT
-    where 
-        gMapT (Leaf x) = Left (f x)
-        gMapT (Bin l r) = Right (l, r)
+  where
+    gMapT (Leaf x) = Left (f x)
+    gMapT (Bin l r) = Right (l, r)

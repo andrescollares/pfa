@@ -24,11 +24,11 @@ fromToTree :: Int -> Int -> Tree Int
 fromToTree b e =
   unfoldTree
     ( \(n, x) ->
-        if n < 1
+        if n < 2
           then Left x
-          else Right ((n `div` 2, x), (n `div` 2, x + (n `div` 2) + 1))
+          else Right (((n `div` 2) + n `mod` 2, x), (n `div` 2, x + (n `div` 2) + (n `mod` 2)))
     )
-    (e - b, b)
+    (e - b + 1, b)
 
 -- en el par (n, x), n = cantidad de nodos que faltan generar
 --                   x = contiene información respecto al nodo o nodos a generar

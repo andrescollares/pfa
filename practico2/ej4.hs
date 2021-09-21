@@ -40,7 +40,6 @@ cant' (Node2 l x r) = 1 + cant' l + cant' r
 cant' (Node3 l x m y r) = 2 + cant' l + cant' m + cant' r -}
 
 -- i)
--- DUDA: Cantidad de nodos o cantidad de valores?
 
 class Cant t where
   cant :: t -> Int
@@ -59,6 +58,8 @@ instance Cant () where
 -- d)
 -- Al igual que en el caso anterior, al no existir la clase que indica que existe
 -- elemT para el tipo Node, no puedo hacer la transición de Tree a Node.
+--
+-- Ver si es posible solucionarla igual que en el caso de cant
 
 {- elemT :: (Eq a) => a -> Tree t a -> Bool
 elemT x (Succ t) = elemT x t

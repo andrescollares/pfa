@@ -132,17 +132,17 @@ zipWithS f xs ys = unstream . zipWithStream f $ (stream xs, stream ys)
 
 zipWithStream :: (a -> b -> c) -> (Stream a, Stream b) -> Stream c
 zipWithStream f (Stream next x, Stream next' y) = Stream next'' (x, y)
-    where
-        next'' (x, y) = case next x of
-            Done -> Done
-            Skip x' -> Skip (x', y) 
-            Yield a x' -> case next' y of
-                Done -> Done
-                Skip y' -> Skip (x, y')
-                Yield b y' -> Yield (f a b) (x', y')
+  where
+    next'' (x, y) = case next x of
+      Done -> Done
+      Skip x' -> Skip (x', y)
+      Yield a x' -> case next' y of
+        Done -> Done
+        Skip y' -> Skip (x, y')
+        Yield b y' -> Yield (f a b) (x', y')
 
--- Skip es la transicion silenciosa, por lo tanto, si tengo skip en uno de los Streams 
--- no quiero perder la información que tiene el otro, lo que lleva a que avance solo 
+-- Skip es la transicion silenciosa, por lo tanto, si tengo skip en uno de los Streams
+-- no quiero perder la información que tiene el otro, lo que lleva a que avance solo
 -- uno de los dos.
 -- No tengo tan claro si eso funciona así.
 
@@ -151,24 +151,24 @@ tailsS xs = (unstream . tailsStream $ stream xs) ++ [[]]
 
 tailsStream :: Stream a -> Stream [a]
 tailsStream (Stream next s) = Stream next' s
-    where
-        next' s = case next s of
-            Done -> Done
-            Skip s' -> Skip s'
-            Yield a s' -> Yield (unstream $ Stream next s) s'
+  where
+    next' s = case next s of
+      Done -> Done
+      Skip s' -> Skip s'
+      Yield a s' -> Yield (unstream $ Stream next s) s'
 
 evensS :: [a] -> [a]
 evensS = unstream . evensStream . stream
 
 evensStream :: Stream a -> Stream a
 evensStream (Stream next s) = Stream next' s
-    where
-        next' s = case next s of
+  where
+    next' s = case next s of
+      Done -> Done
+      Skip s' -> Skip s'
+      Yield a s' -> next'' s
+        where
+          next'' s = case next s' of
             Done -> Done
-            Skip s' -> Skip s'
-            Yield a s' -> next'' s
-                where
-                    next'' s = case next s' of
-                        Done -> Done
-                        Skip s'' -> Skip s'' -- Esto genera un bug en el caso que ocurra
-                        Yield a' s'' -> Yield a' s''
+            Skip s'' -> Skip s'' -- Esto genera un bug en el caso que ocurra
+            Yield a' s'' -> Yield a' s''

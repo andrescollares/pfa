@@ -1,0 +1,36 @@
+	Mon Sep 27 19:23 2021 Time and Allocation Profiling Report  (Final)
+
+	   ej3 +RTS -p -hc -RTS
+
+	total time  =        0.35 secs   (352 ticks @ 1000 us, 1 processor)
+	total alloc = 1,125,058,456 bytes  (excludes profiling overheads)
+
+COST CENTRE      MODULE SRC                    %time %alloc
+
+encode'          Main   ej3.hs:(15,1)-(20,11)   87.8   93.5
+encode'.new_text Main   ej3.hs:17:7-28           4.5    1.9
+moduloToChar     Main   ej3.hs:51:1-37           4.0    4.6
+encode'.\        Main   ej3.hs:19:79-143         3.7    0.0
+
+
+                                                                                     individual      inherited
+COST CENTRE         MODULE                  SRC                   no.     entries  %time %alloc   %time %alloc
+
+MAIN                MAIN                    <built-in>            188           0    0.0    0.0   100.0  100.0
+ CAF                Main                    <entire-module>       375           0    0.0    0.0     0.0    0.0
+  main              Main                    ej3.hs:53:1-49        376           1    0.0    0.0     0.0    0.0
+   encode'          Main                    ej3.hs:(15,1)-(20,11) 377           1    0.0    0.0     0.0    0.0
+ CAF                GHC.Conc.Signal         <entire-module>       302           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Encoding         <entire-module>       284           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Encoding.Iconv   <entire-module>       282           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Exception        <entire-module>       276           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Handle.FD        <entire-module>       274           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Handle.Internals <entire-module>       273           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.FD               <entire-module>       213           0    0.0    0.0     0.0    0.0
+ main               Main                    ej3.hs:53:1-49        378           0    0.0    0.0   100.0  100.0
+  encode'           Main                    ej3.hs:(15,1)-(20,11) 379           0   87.8   93.5   100.0  100.0
+   encode'.\        Main                    ej3.hs:19:190-206     381     3293635    0.0    0.0     0.0    0.0
+   encode'.\        Main                    ej3.hs:19:79-143      383     3266010    3.7    0.0     7.7    4.6
+    moduloToChar    Main                    ej3.hs:51:1-37        384     3266010    4.0    4.6     4.0    4.6
+   encode'.new_text Main                    ej3.hs:17:7-28        380           1    4.5    1.9     4.5    1.9
+   encode'.ultChar  Main                    ej3.hs:18:7-31        382           1    0.0    0.0     0.0    0.0

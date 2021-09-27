@@ -1,0 +1,33 @@
+	Mon Sep 27 19:35 2021 Time and Allocation Profiling Report  (Final)
+
+	   ej3 +RTS -p -hc -RTS
+
+	total time  =        0.35 secs   (347 ticks @ 1000 us, 1 processor)
+	total alloc = 1,047,709,496 bytes  (excludes profiling overheads)
+
+COST CENTRE      MODULE SRC                     %time %alloc
+
+desconvertirChar Main   ej3.hs:(47,1)-(48,137)   48.7   44.9
+decode           Main   ej3.hs:(23,1)-(27,11)    45.2   50.1
+moduloToChar     Main   ej3.hs:51:1-37            6.1    5.0
+
+
+                                                                                      individual      inherited
+COST CENTRE         MODULE                  SRC                    no.     entries  %time %alloc   %time %alloc
+
+MAIN                MAIN                    <built-in>             117           0    0.0    0.0   100.0  100.0
+ CAF                Main                    <entire-module>        233           0    0.0    0.0     0.0    0.0
+  main              Main                    ej3.hs:53:1-41         234           1    0.0    0.0     0.0    0.0
+   decode           Main                    ej3.hs:(23,1)-(27,11)  235           1    0.0    0.0     0.0    0.0
+ CAF                GHC.Conc.Signal         <entire-module>        227           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Encoding         <entire-module>        218           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Encoding.Iconv   <entire-module>        216           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Exception        <entire-module>        210           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Handle.FD        <entire-module>        208           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.Handle.Internals <entire-module>        207           0    0.0    0.0     0.0    0.0
+ CAF                GHC.IO.FD               <entire-module>        146           0    0.0    0.0     0.0    0.0
+ main               Main                    ej3.hs:53:1-41         236           0    0.0    0.0   100.0  100.0
+  decode            Main                    ej3.hs:(23,1)-(27,11)  237           0   45.2   50.1   100.0  100.0
+   desconvertirChar Main                    ej3.hs:(47,1)-(48,137) 238     3266011   48.7   44.9    54.8   49.9
+    moduloToChar    Main                    ej3.hs:51:1-37         240     3266010    6.1    5.0     6.1    5.0
+   decode.key_char  Main                    ej3.hs:25:7-26         239           1    0.0    0.0     0.0    0.0

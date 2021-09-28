@@ -15,7 +15,7 @@ class DSL_HTML t where
   (<->) :: t -> t -> t -- Separa usando un salto de linea
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
-  count_words :: t -> Int
+  countWords :: t -> Int
 
 -- shallow embedded
 
@@ -33,7 +33,7 @@ instance DSL_HTML SHTML where
   (<->) (H t1) (H t2) = H (t1 ++ "<br>" ++ t2)
   (<+>) (H t1) (H t2) = H (t1 ++ " " ++ t2)
   generate (H t) = t
-  count_words _ = undefined
+  countWords _ = undefined
 
 newtype SHTML2 = H2 Int
     deriving (Show)
@@ -49,7 +49,7 @@ instance DSL_HTML SHTML2 where
     (<->) (H2 x1) (H2 x2) = H2 (x1 + x2)
     (<+>) (H2 x1) (H2 x2) = H2 (x1 + x2)
     generate _ = undefined
-    count_words (H2 x) = x
+    countWords (H2 x) = x
 
     -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
 
@@ -72,18 +72,18 @@ ex4 =
 
 -- deep embedded
 
-data HTML where
-  Text :: String -> HTML
-  Bold :: HTML -> HTML
-  Italics :: HTML -> HTML
-  Underline :: HTML -> HTML
-  Url :: HTML -> HTML -> HTML
-  List :: [HTML] -> HTML
-  Size :: Int -> HTML -> HTML
-  Concat :: HTML -> HTML -> HTML
-  ConcatSpace :: HTML -> HTML -> HTML
+data DHTML where
+  Text :: String -> DHTML
+  Bold :: DHTML -> DHTML
+  Italics :: DHTML -> DHTML
+  Underline :: DHTML -> DHTML
+  Url :: DHTML -> DHTML -> DHTML
+  List :: [DHTML] -> DHTML
+  Size :: Int -> DHTML -> DHTML
+  Concat :: DHTML -> DHTML -> DHTML
+  ConcatSpace :: DHTML -> DHTML -> DHTML
 
-instance DSL_HTML HTML where
+instance DSL_HTML DHTML where
   text s = Text s
   bold html = Bold html
   italics html = Italics html
@@ -104,10 +104,37 @@ instance DSL_HTML HTML where
       generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
+  countWords = count_wordsDeep
+    where
+      count_wordsDeep (Text s) = length $ words s
+      count_wordsDeep (Bold html) = count_wordsDeep html
+      count_wordsDeep (Italics html) = count_wordsDeep html
+      count_wordsDeep (Underline html) = count_wordsDeep html
+      count_wordsDeep (Url text html) = count_wordsDeep html
+      count_wordsDeep (Size size html) = count_wordsDeep html
+      count_wordsDeep (List htmls) = sum [count_wordsDeep html | html <- htmls]
+      count_wordsDeep (Concat html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
+      count_wordsDeep (ConcatSpace html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
 
+ex1' :: DHTML
+ex1' = text "hola soy un texto sin formato"
+
+ex2' :: DHTML
+ex2' = (bold . text) "hola soy bold" <+> (underline . bold . text) "y subrayado"
+
+ex3' :: DHTML
+ex3' =
+  ex1' <-> size 35 (ex2' <+> text "y grande")
+    <-> text "consultar en:"
+    <+> url "http://www.google.com" ((bold . text) "Google")
+
+ex4' :: DHTML
+ex4' =
+  text "la lista es:"
+    <+> list [ex1', ex2', (italics . text) "y nada mas"]
 
 main = do
-  print (count_words ex1)
-  print (count_words ex2)
-  print (count_words ex3)
-  print (count_words ex4)
+  print (countWords ex1)
+  print (countWords ex2)
+  print (countWords ex3)
+  print (countWords ex4)

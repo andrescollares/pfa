@@ -51,7 +51,7 @@ instance DSL_HTML SHTML where
     (<+>) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
     generate (H x) = snd x 
     countWords (H x) = fst x
-    color r g b (H x) = H (fst x, "<span style=\"color: rgb(" ++ show r ++ ", " ++ show g ++ ", " ++ show b ++ ")\">" ++ snd x ++ "</span>") 
+    color r g b (H x) = H (fst x, "<span style=\"color:rgb(" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ");\">" ++ snd x ++ "</span>") 
 
     -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
 
@@ -72,6 +72,9 @@ ex4 =
   text "la lista es:"
     <+> list [ex1, ex2, (italics . text) "y nada mas"]
 
+ex5 :: SHTML
+ex5 = (bold . text) "Hola" <+> (color 255 0 0 . text) "soy un texto en rojo" <+> text "pero se me pasa."
+
 -- deep embedded
 
 data DHTML where
@@ -84,6 +87,7 @@ data DHTML where
   Size :: Int -> DHTML -> DHTML
   Concat :: DHTML -> DHTML -> DHTML
   ConcatSpace :: DHTML -> DHTML -> DHTML
+  Color :: Int -> Int -> Int -> DHTML -> DHTML
 
 instance DSL_HTML DHTML where
   text s = Text s
@@ -93,6 +97,7 @@ instance DSL_HTML DHTML where
   url string html = Url (text string) html
   size tam html = Size tam html
   list htmls = List htmls
+  color c1 c2 c3 html = Color c1 c2 c3 html
   (<->) html1 html2 = Concat html1 html2
   (<+>) html1 html2 = ConcatSpace html1 html2
   generate = generateDeep
@@ -106,6 +111,7 @@ instance DSL_HTML DHTML where
       generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
+      generateDeep (Color c1 c2 c3 html) = "<span style=\"color:rgb(" ++ show c1 ++ ", " ++ show c2 ++ ", " ++ show c3 ++ ");\">" ++ generateDeep html ++ "</span>"
   countWords = count_wordsDeep
     where
       count_wordsDeep (Text s) = length $ words s
@@ -117,6 +123,7 @@ instance DSL_HTML DHTML where
       count_wordsDeep (List htmls) = sum [count_wordsDeep html | html <- htmls]
       count_wordsDeep (Concat html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
       count_wordsDeep (ConcatSpace html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
+      count_wordsDeep (Color c1 c2 c3 html) = count_wordsDeep html
 
 ex1' :: DHTML
 ex1' = text "hola soy un texto sin formato"
@@ -135,8 +142,12 @@ ex4' =
   text "la lista es:"
     <+> list [ex1', ex2', (italics . text) "y nada mas"]
 
+ex5' :: DHTML
+ex5' = (bold . text) "Hola" <+> (color 255 0 0 . text) "soy un texto en rojo" <+> text "pero se me pasa."
+
 main = do
-  print (generate ex1)
-  print (generate ex2)
-  print (generate ex3)
-  print (generate ex4)
+  writeFile "ex1.html" (generate ex1)
+  writeFile "ex2.html" (generate ex2)
+  writeFile "ex3.html" (generate ex3)
+  writeFile "ex4.html" (generate ex4)
+  writeFile "ex5.html" (generate ex5)

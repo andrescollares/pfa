@@ -3,7 +3,7 @@ data Tree a = Leaf a | Bin (Tree a) (Tree a)
 instance (Show a) => Show (Tree a) where
   show tree = case tree of
     Leaf x -> show x
-    Bin left right -> show left ++ " " ++ show right
+    Bin left right -> "[ " ++ show left ++ " ] <- . -> [ " ++ show right ++ " ]"
 
 -- a)
 
@@ -16,7 +16,7 @@ unfoldTree next s = case next s of
 
 -- replicateTree n x retorna un árbol balanceado con n hojas cuyo valor es x.
 replicateTree :: Int -> b -> Tree b
-replicateTree n x = unfoldTree (\n -> if n == 1 then Left x else Right (n `div` 2, n `div` 2)) n
+replicateTree n x = unfoldTree (\n -> if n < 2 then Left x else Right (n `div` 2 + n `mod` 2, n `div` 2)) n
 
 -- fromToTree b e retorna un árbol balanceado tal que, si sus hojas son visitadas
 -- de izquierda a derecha se obtiene la lista [b..e].

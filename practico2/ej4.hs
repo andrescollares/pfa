@@ -21,13 +21,10 @@ instance (Show t, Show a) => Show (Node t a) where
   show (Node3 l x m y r) = "[ " ++ show l ++ " <- " ++ show x ++ " ( " ++ show m ++ " ) " ++ show y ++ " -> " ++ show r ++ " ]"
 
 -- c)
--- DUDA: Deben aplicarse sobre STree o sobre Tree t a?
--- en caso que sea Tree t a, esta bien forzar que sea Cant t?
--- En el caso de cant, está bien lo escrito aca?
---
--- No se puede implementar dado que necesito acceder a los nodos para saber la cantidad de valores
--- pero no se puede hacer pattern matching en Node sobre t en (Zero t), en resumen, haskell no sabe que luego de un Zero vienen
--- Nodes, lo único que sabe es que es algo del tipo t, pero en las instancias esto cambia dado que podemos indicar que t es una instancia de Cant.
+-- No se puede implementar dado que para conseguir la cantidad de valores necesito acceder a Node,
+-- pero no se puede hacer pattern matching en Node sobre t siendo (Zero t), en resumen, 
+-- haskell no sabe que luego de un Zero vienen Nodes, lo único que sabe es que es algo del tipo t, 
+-- pero en las instancias esto cambia dado que podemos indicar que t es una instancia de Cant.
 
 {- cant :: Tree t a -> Int
 cant (Zero t) = case t of
@@ -58,8 +55,6 @@ instance Cant () where
 -- d)
 -- Al igual que en el caso anterior, al no existir la clase que indica que existe
 -- elemT para el tipo Node, no puedo hacer la transición de Tree a Node.
---
--- Ver si es posible solucionarla igual que en el caso de cant
 
 {- elemT :: (Eq a) => a -> Tree t a -> Bool
 elemT x (Succ t) = elemT x t

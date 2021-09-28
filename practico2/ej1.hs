@@ -144,7 +144,6 @@ zipWithStream f (Stream next x, Stream next' y) = Stream next'' (x, y)
 -- Skip es la transicion silenciosa, por lo tanto, si tengo skip en uno de los Streams
 -- no quiero perder la información que tiene el otro, lo que lleva a que avance solo
 -- uno de los dos.
--- No tengo tan claro si eso funciona así.
 
 tailsS :: [a] -> [[a]]
 tailsS xs = (unstream . tailsStream $ stream xs) ++ [[]]
@@ -170,5 +169,5 @@ evensStream (Stream next s) = Stream next' s
         where
           next'' s = case next s' of
             Done -> Done
-            Skip s'' -> Skip s'' -- Esto genera un bug en el caso que ocurra
+            Skip s'' -> Skip s''
             Yield a' s'' -> Yield a' s''

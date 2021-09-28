@@ -39,7 +39,7 @@ instance DSL_HTML HTML where
   list htmls = List htmls
   (<->) html1 html2 = Concat html1 html2
   (<+>) html1 html2 = ConcatSpace html1 html2
-  generate = generateDeep
+  generate html = "<html>\n  <head></head>\n  <body>" ++ generateDeep html ++ "\n  </body>\n</html>"
     where
       generateDeep (Text s) = s
       generateDeep (Bold html) = "<b>" ++ generateDeep html ++ "</b>"

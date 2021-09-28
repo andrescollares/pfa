@@ -16,41 +16,6 @@ class DSL_HTML t where
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
 
--- deep embedded
-
-data HTML where
-  Text :: String -> HTML
-  Bold :: HTML -> HTML
-  Italics :: HTML -> HTML
-  Underline :: HTML -> HTML
-  Url :: HTML -> HTML -> HTML
-  List :: [HTML] -> HTML
-  Size :: Int -> HTML -> HTML
-  Concat :: HTML -> HTML -> HTML
-  ConcatSpace :: HTML -> HTML -> HTML
-
-instance DSL_HTML HTML where
-  text s = Text s
-  bold html = Bold html
-  italics html = Italics html
-  underline html = Underline html
-  url string html = Url (text string) html
-  size tam html = Size tam html
-  list htmls = List htmls
-  (<->) html1 html2 = Concat html1 html2
-  (<+>) html1 html2 = ConcatSpace html1 html2
-  generate = generateDeep
-    where
-      generateDeep (Text s) = s
-      generateDeep (Bold html) = "<b>" ++ generateDeep html ++ "</b>"
-      generateDeep (Italics html) = "<i>" ++ generateDeep html ++ "</i>"
-      generateDeep (Underline html) = "<ins>" ++ generateDeep html ++ "</ins>"
-      generateDeep (Url text html) = "<a href=\"" ++ generateDeep text ++ "\">" ++ generateDeep html ++ "</a>"
-      generateDeep (Size size html) = "<span style=\"font-size:" ++ show size ++ "\">" ++ generateDeep html ++ "</span>"
-      generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
-      generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
-      generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
-
 -- shallow embedded
 
 newtype SHTML = H String
@@ -86,6 +51,42 @@ ex4 :: SHTML
 ex4 =
   text "la lista es:"
     <+> list [ex1, ex2, (italics . text) "y nada mas"]
+
+-- deep embedded
+
+data HTML where
+  Text :: String -> HTML
+  Bold :: HTML -> HTML
+  Italics :: HTML -> HTML
+  Underline :: HTML -> HTML
+  Url :: HTML -> HTML -> HTML
+  List :: [HTML] -> HTML
+  Size :: Int -> HTML -> HTML
+  Concat :: HTML -> HTML -> HTML
+  ConcatSpace :: HTML -> HTML -> HTML
+
+instance DSL_HTML HTML where
+  text s = Text s
+  bold html = Bold html
+  italics html = Italics html
+  underline html = Underline html
+  url string html = Url (text string) html
+  size tam html = Size tam html
+  list htmls = List htmls
+  (<->) html1 html2 = Concat html1 html2
+  (<+>) html1 html2 = ConcatSpace html1 html2
+  generate = generateDeep
+    where
+      generateDeep (Text s) = s
+      generateDeep (Bold html) = "<b>" ++ generateDeep html ++ "</b>"
+      generateDeep (Italics html) = "<i>" ++ generateDeep html ++ "</i>"
+      generateDeep (Underline html) = "<ins>" ++ generateDeep html ++ "</ins>"
+      generateDeep (Url text html) = "<a href=\"" ++ generateDeep text ++ "\">" ++ generateDeep html ++ "</a>"
+      generateDeep (Size size html) = "<span style=\"font-size:" ++ show size ++ "\">" ++ generateDeep html ++ "</span>"
+      generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
+      generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
+      generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
+
 
 main = do
   writeFile "ex1.html" (generate ex1)

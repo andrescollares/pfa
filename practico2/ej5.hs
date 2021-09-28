@@ -10,17 +10,19 @@ class DSL_HTML t where
   italics :: t -> t
   underline :: t -> t
   url :: String -> t -> t
-  size :: Int -> t -> t -- revisar este, el HTML mantiene un campo largo o como?
-  list :: [t] -> t -- Utilizar el tipo lista de HTML
-  (<->) :: t -> t -> t -- Separa usando un salto de linea
-  (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
+  size :: Int -> t -> t
+  list :: [t] -> t
+  (<->) :: t -> t -> t
+  (<+>) :: t -> t -> t
   generate :: t -> String
   countWords :: t -> Int
   color :: Int -> Int -> Int -> t -> t
 
 -- shallow embedded
 
-{- newtype SHTML1 = H String
+{- Primer versión sin countWords
+ 
+newtype SHTML1 = H String
   deriving (Show)
 
 instance DSL_HTML SHTML1 where
@@ -37,23 +39,23 @@ instance DSL_HTML SHTML1 where
   countWords _ = undefined -}
 
 newtype SHTML = H (Int, String)
-    deriving (Show)
+  deriving (Show)
 
 instance DSL_HTML SHTML where
-    text x = H (length $ words x, x)
-    bold (H x) = H (fst x, "<b>" ++ snd x ++ "</b>")
-    italics (H x) = H (fst x, "<i>" ++ snd x ++ "</i>")
-    underline (H x) = H (fst x, "<ins>" ++ snd x ++ "</ins>")
-    url url (H x) = H (fst x, "<a href=\"" ++ url ++ "\">" ++ snd x ++ "</a>")
-    size s (H x) = H (fst x, "<span style=\"font-size:" ++ show s ++ "px\">" ++ snd x ++ "</span>")
-    list xs = H (foldl' (\sum (H (x,_)) -> sum + x) 0 xs, "<ul>" ++ concatMap (\(H (_, t)) -> "<li>" ++ t ++ "</li>") xs ++ "</ul>")
-    (<->) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ "<br>" ++ snd x2)
-    (<+>) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
-    generate (H x) = snd x 
-    countWords (H x) = fst x
-    color r g b (H x) = H (fst x, "<span style=\"color:rgb(" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ");\">" ++ snd x ++ "</span>") 
+  text x = H (length $ words x, x)
+  bold (H x) = H (fst x, "<b>" ++ snd x ++ "</b>")
+  italics (H x) = H (fst x, "<i>" ++ snd x ++ "</i>")
+  underline (H x) = H (fst x, "<ins>" ++ snd x ++ "</ins>")
+  url url (H x) = H (fst x, "<a href=\"" ++ url ++ "\">" ++ snd x ++ "</a>")
+  size s (H x) = H (fst x, "<span style=\"font-size:" ++ show s ++ "px\">" ++ snd x ++ "</span>")
+  list xs = H (foldl' (\sum (H (x, _)) -> sum + x) 0 xs, "<ul>" ++ concatMap (\(H (_, t)) -> "<li>" ++ t ++ "</li>") xs ++ "</ul>")
+  (<->) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ "<br>" ++ snd x2)
+  (<+>) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
+  generate (H x) = snd x
+  countWords (H x) = fst x
+  color r g b (H x) = H (fst x, "<span style=\"color:rgb(" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ");\">" ++ snd x ++ "</span>")
 
-    -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
+-- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
 
 ex1 :: SHTML
 ex1 = text "hola soy un texto sin formato"

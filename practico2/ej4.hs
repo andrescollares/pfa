@@ -22,9 +22,12 @@ instance (Show t, Show a) => Show (Node t a) where
 
 -- c)
 -- No se puede implementar dado que para conseguir la cantidad de valores necesito acceder a Node,
--- pero no se puede hacer pattern matching en Node sobre t siendo (Zero t), en resumen, 
--- haskell no sabe que luego de un Zero vienen Nodes, lo único que sabe es que es algo del tipo t, 
--- pero en las instancias esto cambia dado que podemos indicar que t es una instancia de Cant.
+-- pero no se puede hacer pattern matching en Node sobre t siendo (Zero t), es decir,
+-- haskell no sabe que luego de un Zero vienen Nodes, lo único que sabe es que es algo del tipo t.
+--
+-- En las instancias esto cambia dado que podemos indicar que t es una instancia de Cant
+-- y de esta forma haskell sabe que el dato de tipo t tiene una implementación de cant, 
+-- por lo que es posible la recursión.
 
 {- cant :: Tree t a -> Int
 cant (Zero t) = case t of

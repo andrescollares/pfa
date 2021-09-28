@@ -28,47 +28,64 @@ instance DSL_HTML SHTML where
   bold (H t) = H ("<b>" ++ t ++ "</b>")
   italics (H t) = H ("<i>" ++ t ++ "</i>")
   underline (H t) = H ("<ins>" ++ t ++ "</ins>")
-  url url (H t) = H ("<a href='" ++ url ++ "'>" ++ t ++ "</a>")
-  size s (H t) = H ("<span style='font-size:'" ++ show s ++ "px'>" ++ t ++ "</span>")
+  url url (H t) = H ("<a href=\"" ++ url ++ "\">" ++ t ++ "</a>")
+  size s (H t) = H ("<span style=\"font-size:" ++ show s ++ "px\">" ++ t ++ "</span>")
   list ts = H ("<ul>" ++ concatMap (\(H t) -> "<li>" ++ t ++ "</li>") ts ++ "</ul>")
   (<->) (H t1) (H t2) = H (t1 ++ "<br>" ++ t2)
   (<+>) (H t1) (H t2) = H (t1 ++ " " ++ t2)
   generate (H t) = t
+  countWords _ = undefined
+
+newtype SHTML2 = H2 Int
+  deriving (Show)
+
+instance DSL_HTML SHTML2 where
+  text x = H2 (length $ words x)
+  bold (H2 x) = H2 x
+  italics (H2 x) = H2 x
+  underline (H2 x) = H2 x
+  url _ (H2 x) = H2 x
+  size _ (H2 x) = H2 x
+  list xs = H2 (foldl' (\sum (H2 x) -> sum + x) 0 xs)
+  (<->) (H2 x1) (H2 x2) = H2 (x1 + x2)
+  (<+>) (H2 x1) (H2 x2) = H2 (x1 + x2)
+  generate _ = undefined
+  countWords (H2 x) = x
 
 -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
 
-ex1 :: SHTML
+ex1 :: SHTML2
 ex1 = text "hola soy un texto sin formato"
 
-ex2 :: SHTML
-ex2 = (bold . text) "hola soy bold" <+> (underline . bold . text) "y subrayado"
+ex2 :: SHTML2
+ex2 = (bold . text) "hola soy bold" <+> (underline . bold . text) " y subrayado"
 
-ex3 :: SHTML
+ex3 :: SHTML2
 ex3 =
   ex1 <-> size 35 (ex2 <+> text "y grande")
     <-> text "consultar en:"
     <+> url "http://www.google.com" ((bold . text) "Google")
 
-ex4 :: SHTML
+ex4 :: SHTML2
 ex4 =
   text "la lista es:"
     <+> list [ex1, ex2, (italics . text) "y nada mas"]
 
 -- deep embedded
 
-data HTML where
-  Text :: String -> HTML
-  Bold :: HTML -> HTML
-  Italics :: HTML -> HTML
-  Underline :: HTML -> HTML
-  Url :: HTML -> HTML -> HTML
-  List :: [HTML] -> HTML
-  Size :: Int -> HTML -> HTML
-  Concat :: HTML -> HTML -> HTML
-  ConcatSpace :: HTML -> HTML -> HTML
-  Color :: Int -> Int -> Int -> HTML -> HTML
+data DHTML where
+  Text :: String -> DHTML
+  Bold :: DHTML -> DHTML
+  Italics :: DHTML -> DHTML
+  Underline :: DHTML -> DHTML
+  Url :: DHTML -> DHTML -> DHTML
+  List :: [DHTML] -> DHTML
+  Size :: Int -> DHTML -> DHTML
+  Concat :: DHTML -> DHTML -> DHTML
+  ConcatSpace :: DHTML -> DHTML -> DHTML
+  Color :: Int -> Int -> Int -> DHTML -> DHTML
 
-instance DSL_HTML HTML where
+instance DSL_HTML DHTML where
   text s = Text s
   bold html = Bold html
   italics html = Italics html
@@ -86,7 +103,7 @@ instance DSL_HTML HTML where
       generateDeep (Italics html) = "<i>" ++ generateDeep html ++ "</i>"
       generateDeep (Underline html) = "<ins>" ++ generateDeep html ++ "</ins>"
       generateDeep (Url text html) = "<a href=\"" ++ generateDeep text ++ "\">" ++ generateDeep html ++ "</a>"
-      generateDeep (Size size html) = "<span style=\"font-size:" ++ show size ++ "\">" ++ generateDeep html ++ "</span>"
+      generateDeep (Size size html) = "<span style=\"font-size:" ++ show size ++ "px\">" ++ generateDeep html ++ "</span>"
       generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
@@ -104,29 +121,28 @@ instance DSL_HTML HTML where
       count_wordsDeep (ConcatSpace html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
       count_wordsDeep (Color c1 c2 c3 html) = count_wordsDeep html
 
-ex1' :: HTML
+ex1' :: DHTML
 ex1' = text "hola soy un texto sin formato"
 
-ex2' :: HTML
+ex2' :: DHTML
 ex2' = (bold . text) "hola soy bold" <+> (underline . bold . text) "y subrayado"
 
-ex3' :: HTML
+ex3' :: DHTML
 ex3' =
   ex1' <-> size 35 (ex2' <+> text "y grande")
     <-> text "consultar en:"
     <+> url "http://www.google.com" ((bold . text) "Google")
 
-ex4' :: HTML
+ex4' :: DHTML
 ex4' =
   text "la lista es:"
     <+> list [ex1', ex2', (italics . text) "y nada mas"]
 
-ex5' :: HTML
+ex5' :: DHTML
 ex5' = (bold . text) "Hola" <+> (color 255 0 0 . text) "soy un texto en rojo" <+> text "pero se me pasa."
 
 main = do
-  writeFile "ex1.html" (generate ex1)
-  writeFile "ex2.html" (generate ex2)
-  writeFile "ex3.html" (generate ex3)
-  writeFile "ex4.html" (generate ex4)
-  writeFile "ex5p.html" (generate ex5')
+  print (countWords ex1)
+  print (countWords ex2)
+  print (countWords ex3)
+  print (countWords ex4)

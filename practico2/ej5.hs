@@ -16,13 +16,14 @@ class DSL_HTML t where
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
   countWords :: t -> Int
+  color :: Int -> Int -> Int -> t -> t
 
 -- shallow embedded
 
-newtype SHTML = H String
+{- newtype SHTML1 = H String
   deriving (Show)
 
-instance DSL_HTML SHTML where
+instance DSL_HTML SHTML1 where
   text t = H t
   bold (H t) = H ("<b>" ++ t ++ "</b>")
   italics (H t) = H ("<i>" ++ t ++ "</i>")
@@ -33,39 +34,40 @@ instance DSL_HTML SHTML where
   (<->) (H t1) (H t2) = H (t1 ++ "<br>" ++ t2)
   (<+>) (H t1) (H t2) = H (t1 ++ " " ++ t2)
   generate (H t) = t
-  countWords _ = undefined
+  countWords _ = undefined -}
 
-newtype SHTML2 = H2 (Int, String)
+newtype SHTML = H (Int, String)
     deriving (Show)
 
-instance DSL_HTML SHTML2 where
-    text x = H2 (length $ words x, x)
-    bold (H2 x) = H2 (fst x, "<b>" ++ snd x ++ "</b>")
-    italics (H2 x) = H2 (fst x, "<i>" ++ snd x ++ "</i>")
-    underline (H2 x) = H2 (fst x, "<ins>" ++ snd x ++ "</ins>")
-    url url (H2 x) = H2 (fst x, "<a href=\"" ++ url ++ "\">" ++ snd x ++ "</a>")
-    size s (H2 x) = H2 (fst x, "<span style=\"font-size:" ++ show s ++ "px\">" ++ snd x ++ "</span>")
-    list xs = H2 (foldl' (\sum (H2 (x,_)) -> sum + x) 0 xs, "<ul>" ++ concatMap (\(H2 (_, t)) -> "<li>" ++ t ++ "</li>") xs ++ "</ul>")
-    (<->) (H2 x1) (H2 x2) = H2 (fst x1 + fst x2, snd x1 ++ "<br>" ++ snd x2)
-    (<+>) (H2 x1) (H2 x2) = H2 (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
-    generate (H2 x) = snd x 
-    countWords (H2 x) = fst x
+instance DSL_HTML SHTML where
+    text x = H (length $ words x, x)
+    bold (H x) = H (fst x, "<b>" ++ snd x ++ "</b>")
+    italics (H x) = H (fst x, "<i>" ++ snd x ++ "</i>")
+    underline (H x) = H (fst x, "<ins>" ++ snd x ++ "</ins>")
+    url url (H x) = H (fst x, "<a href=\"" ++ url ++ "\">" ++ snd x ++ "</a>")
+    size s (H x) = H (fst x, "<span style=\"font-size:" ++ show s ++ "px\">" ++ snd x ++ "</span>")
+    list xs = H (foldl' (\sum (H (x,_)) -> sum + x) 0 xs, "<ul>" ++ concatMap (\(H (_, t)) -> "<li>" ++ t ++ "</li>") xs ++ "</ul>")
+    (<->) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ "<br>" ++ snd x2)
+    (<+>) (H x1) (H x2) = H (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
+    generate (H x) = snd x 
+    countWords (H x) = fst x
+    color r g b (H x) = H (fst x, "<span style=\"color: rgb(" ++ show r ++ ", " ++ show g ++ ", " ++ show b ++ ")\">" ++ snd x ++ "</span>") 
 
     -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
 
-ex1 :: SHTML2
+ex1 :: SHTML
 ex1 = text "hola soy un texto sin formato"
 
-ex2 :: SHTML2
+ex2 :: SHTML
 ex2 = (bold . text) "hola soy bold" <+> (underline . bold . text) " y subrayado"
 
-ex3 :: SHTML2
+ex3 :: SHTML
 ex3 =
   ex1 <-> size 35 (ex2 <+> text "y grande")
     <-> text "consultar en:"
     <+> url "http://www.google.com" ((bold . text) "Google")
 
-ex4 :: SHTML2
+ex4 :: SHTML
 ex4 =
   text "la lista es:"
     <+> list [ex1, ex2, (italics . text) "y nada mas"]

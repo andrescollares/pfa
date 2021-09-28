@@ -15,6 +15,7 @@ class DSL_HTML t where
   (<->) :: t -> t -> t -- Separa usando un salto de linea
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
+  countWords :: t -> Int
 
 -- shallow embedded
 
@@ -86,7 +87,34 @@ instance DSL_HTML HTML where
       generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
+  countWords = count_wordsDeep
+    where
+      count_wordsDeep (Text s) = length $ words s
+      count_wordsDeep (Bold html) = count_wordsDeep html
+      count_wordsDeep (Italics html) = count_wordsDeep html
+      count_wordsDeep (Underline html) = count_wordsDeep html
+      count_wordsDeep (Url text html) = count_wordsDeep html
+      count_wordsDeep (Size size html) = count_wordsDeep html
+      count_wordsDeep (List htmls) = sum [count_wordsDeep html | html <- htmls]
+      count_wordsDeep (Concat html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
+      count_wordsDeep (ConcatSpace html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
 
+ex1' :: HTML
+ex1' = text "hola soy un texto sin formato"
+
+ex2' :: HTML
+ex2' = (bold . text) "hola soy bold" <+> (underline . bold . text) "y subrayado"
+
+ex3' :: HTML
+ex3' =
+  ex1' <-> size 35 (ex2' <+> text "y grande")
+    <-> text "consultar en:"
+    <+> url "http://www.google.com" ((bold . text) "Google")
+
+ex4' :: HTML
+ex4' =
+  text "la lista es:"
+    <+> list [ex1', ex2', (italics . text) "y nada mas"]
 
 main = do
   writeFile "ex1.html" (generate ex1)

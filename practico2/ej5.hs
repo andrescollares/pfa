@@ -36,6 +36,7 @@ instance DSL_HTML SHTML where
   generate (H t) = t
   countWords _ = undefined
 
+<<<<<<< HEAD
 newtype SHTML2 = H2 Int
   deriving (Show)
 
@@ -53,6 +54,25 @@ instance DSL_HTML SHTML2 where
   countWords (H2 x) = x
 
 -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
+=======
+newtype SHTML2 = H2 (Int, String)
+    deriving (Show)
+
+instance DSL_HTML SHTML2 where
+    text x = H2 (length $ words x, x)
+    bold (H2 x) = H2 (fst x, "<b>" ++ snd x ++ "</b>")
+    italics (H2 x) = H2 (fst x, "<i>" ++ snd x ++ "</i>")
+    underline (H2 x) = H2 (fst x, "<ins>" ++ snd x ++ "</ins>")
+    url url (H2 x) = H2 (fst x, "<a href=\"" ++ url ++ "\">" ++ snd x ++ "</a>")
+    size s (H2 x) = H2 (fst x, "<span style=\"font-size:" ++ show s ++ "px\">" ++ snd x ++ "</span>")
+    list xs = H2 (foldl' (\sum (H2 (x,_)) -> sum + x) 0 xs, "<ul>" ++ concatMap (\(H2 (_, t)) -> "<li>" ++ t ++ "</li>") xs ++ "</ul>")
+    (<->) (H2 x1) (H2 x2) = H2 (fst x1 + fst x2, snd x1 ++ "<br>" ++ snd x2)
+    (<+>) (H2 x1) (H2 x2) = H2 (fst x1 + fst x2, snd x1 ++ " " ++ snd x2)
+    generate (H2 x) = snd x 
+    countWords (H2 x) = fst x
+
+    -- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
+>>>>>>> bfe65e67d0e505a37726690aa14793bd5e1536d9
 
 ex1 :: SHTML2
 ex1 = text "hola soy un texto sin formato"
@@ -142,7 +162,7 @@ ex5' :: DHTML
 ex5' = (bold . text) "Hola" <+> (color 255 0 0 . text) "soy un texto en rojo" <+> text "pero se me pasa."
 
 main = do
-  print (countWords ex1)
-  print (countWords ex2)
-  print (countWords ex3)
-  print (countWords ex4)
+  print (generate ex1)
+  print (generate ex2)
+  print (generate ex3)
+  print (generate ex4)

@@ -16,6 +16,7 @@ class DSL_HTML t where
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
   countWords :: t -> Int
+  color :: Int -> Int -> Int -> t -> t
 
 -- shallow embedded
 
@@ -65,6 +66,7 @@ data HTML where
   Size :: Int -> HTML -> HTML
   Concat :: HTML -> HTML -> HTML
   ConcatSpace :: HTML -> HTML -> HTML
+  Color :: Int -> Int -> Int -> HTML -> HTML
 
 instance DSL_HTML HTML where
   text s = Text s
@@ -74,6 +76,7 @@ instance DSL_HTML HTML where
   url string html = Url (text string) html
   size tam html = Size tam html
   list htmls = List htmls
+  color c1 c2 c3 html = Color c1 c2 c3 html
   (<->) html1 html2 = Concat html1 html2
   (<+>) html1 html2 = ConcatSpace html1 html2
   generate = generateDeep
@@ -87,6 +90,7 @@ instance DSL_HTML HTML where
       generateDeep (List htmls) = "<ul>" ++ concat ["<li>" ++ generateDeep html ++ "</li>" | html <- htmls] ++ "</ul>"
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
+      generateDeep (Color c1 c2 c3 html) = "<span style=\"color:rgb(" ++ show c1 ++ ", " ++ show c2 ++ ", " ++ show c3 ++ ");\">" ++ generateDeep html ++ "</span>"
   countWords = count_wordsDeep
     where
       count_wordsDeep (Text s) = length $ words s
@@ -98,6 +102,7 @@ instance DSL_HTML HTML where
       count_wordsDeep (List htmls) = sum [count_wordsDeep html | html <- htmls]
       count_wordsDeep (Concat html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
       count_wordsDeep (ConcatSpace html1 html2) = count_wordsDeep html1 + count_wordsDeep html2
+      count_wordsDeep (Color c1 c2 c3 html) = count_wordsDeep html
 
 ex1' :: HTML
 ex1' = text "hola soy un texto sin formato"
@@ -116,8 +121,12 @@ ex4' =
   text "la lista es:"
     <+> list [ex1', ex2', (italics . text) "y nada mas"]
 
+ex5' :: HTML
+ex5' = (bold . text) "Hola" <+> (color 255 0 0 . text) "soy un texto en rojo" <+> text "pero se me pasa."
+
 main = do
   writeFile "ex1.html" (generate ex1)
   writeFile "ex2.html" (generate ex2)
   writeFile "ex3.html" (generate ex3)
   writeFile "ex4.html" (generate ex4)
+  writeFile "ex5p.html" (generate ex5')

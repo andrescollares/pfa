@@ -1,5 +1,9 @@
 {-# LANGUAGE GADTs #-}
 
+module Ej5 (SHTML) where
+
+import Data.List (foldl')
+
 class DSL_HTML t where
   text :: String -> t
   bold :: t -> t
@@ -11,18 +15,6 @@ class DSL_HTML t where
   (<->) :: t -> t -> t -- Separa usando un salto de linea
   (<+>) :: t -> t -> t -- Separa usando un espacio en blanco
   generate :: t -> String
-
--- shallow embedded
-
--- newtype SHTML = String -> Bool
-
--- instance DSL_HTML SHTML where
---   bold txt = "<b>" ++ txt ++ "</b>"
---   italics txt = "<i>" ++ txt ++ "</i>"
---   underline txt = "<u>" ++ txt ++ "</u>"
---   url url txt = "<a href='" ++ url ++ "'>" ++ txt ++ "</a>"
-
--- list txts = "<ul>" ++ (concatMap (\txt -> "<li>" ++ ) (t a)) ++ "</ul>"
 
 -- deep embedded
 
@@ -59,19 +51,38 @@ instance DSL_HTML HTML where
       generateDeep (Concat html1 html2) = generateDeep html1 ++ "<br/>" ++ generateDeep html2
       generateDeep (ConcatSpace html1 html2) = generateDeep html1 ++ " " ++ generateDeep html2
 
-ex1 :: HTML
+-- shallow embedded
+
+newtype SHTML = H String
+  deriving (Show)
+
+instance DSL_HTML SHTML where
+  text t = H t
+  bold (H t) = H ("<b>" ++ t ++ "</b>")
+  italics (H t) = H ("<i>" ++ t ++ "</i>")
+  underline (H t) = H ("<ins>" ++ t ++ "</ins>")
+  url url (H t) = H ("<a href='" ++ url ++ "'>" ++ t ++ "</a>")
+  size s (H t) = H ("<span style='font-size:'" ++ show s ++ "px'>" ++ t ++ "</span>")
+  list ts = H ("<ul>" ++ concatMap (\(H t) -> "<li>" ++ t ++ "</li>") ts ++ "</ul>")
+  (<->) (H t1) (H t2) = H (t1 ++ "<br>" ++ t2)
+  (<+>) (H t1) (H t2) = H (t1 ++ " " ++ t2)
+  generate (H t) = t
+
+-- generate (H t) = "<html>\n  <head></head>\n  <body>" ++ t ++ "\n  </body>\n</html>"
+
+ex1 :: SHTML
 ex1 = text "hola soy un texto sin formato"
 
-ex2 :: HTML
+ex2 :: SHTML
 ex2 = (bold . text) "hola soy bold" <+> (underline . bold . text) "y subrayado"
 
-ex3 :: HTML
+ex3 :: SHTML
 ex3 =
   ex1 <-> size 35 (ex2 <+> text "y grande")
     <-> text "consultar en:"
     <+> url "http://www.google.com" ((bold . text) "Google")
 
-ex4 :: HTML
+ex4 :: SHTML
 ex4 =
   text "la lista es:"
     <+> list [ex1, ex2, (italics . text) "y nada mas"]

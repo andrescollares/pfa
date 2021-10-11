@@ -21,6 +21,7 @@ h3 = do
   z <- g3
   return (x, z)
 
+g1 :: State Int Int
 g1 = do
   state <- put 1
   return get state

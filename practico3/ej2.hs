@@ -1,4 +1,5 @@
 import Control.Monad
+import Control.Monad.Reader
 import GHC.Base hiding ((<|>))
 
 data Expr
@@ -137,3 +138,26 @@ parser =
       e <- parser
       pSym ')'
       return e
+
+type Env = [(String, Int)]
+type InterM = Reader Env Int
+
+addVar :: (String, Int) -> Env -> Env
+addVar (v, e) [] = [(v, e)]
+addVar (v1, e1) ((v, e):vars) = if v1 == v then (v1, e1):vars else (v, e):addVar (v1, e1) vars
+
+getVarValue :: Env -> String -> Int
+getVarValue [] _ = 0
+getVarValue ((v, e):vars) v1 = if v == v1 then e else getVarValue vars v1
+
+interp :: Expr -> InterM
+interp (Let v e1 e2) = local (addVar (v, eval e1)) $ interp e2
+interp (Add e1 e2) = do a <- interp e1 
+                        b <- interp e2
+                        return (a + b)
+interp (Num n) = return n
+interp (Var v) = do vars <- ask 
+                    return $ getVarValue vars v
+
+eval :: Expr -> Int
+eval = 

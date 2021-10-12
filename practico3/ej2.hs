@@ -1,6 +1,7 @@
 import Control.Monad
 import Control.Monad.Reader
 import GHC.Base hiding ((<|>))
+import System.Posix.ByteString (PathVar(FileSizeBits))
 
 data Expr
   = Let String Expr Expr
@@ -159,5 +160,19 @@ interp (Num n) = return n
 interp (Var v) = do vars <- ask 
                     return $ getVarValue vars v
 
+-- b)
+
 eval :: Expr -> Int
-eval = 
+eval e = runReader (interp e) [] 
+
+-- c)
+
+-- d)
+
+main :: IO ()
+main = do file <- getLine
+          text <- readFile file
+          print $ eval $ fst $ head $ runP parser text
+          return ()
+
+

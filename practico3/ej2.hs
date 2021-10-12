@@ -86,12 +86,6 @@ isLower c = (c >= 'a') && (c <= 'z')
 lower :: Parser Char
 lower = do pSat isLower
 
-isKeyWord s = s == "add" && s == "let"
-
-{- pString :: String -> Parser String
-pString "" = return ""
-pString (c:cs) = do {pSat (c ==); pString cs; return (c:cs)} -}
-
 space :: Parser String
 space = pList (pSat (== ' '))
 

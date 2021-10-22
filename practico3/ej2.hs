@@ -1,7 +1,5 @@
-import Control.Monad
 import Control.Monad.Reader
 import GHC.Base hiding ((<|>))
-import System.Posix.ByteString (PathVar(FileSizeBits))
 
 data Expr
   = Let String Expr Expr
@@ -133,6 +131,10 @@ parser =
       e <- parser
       pSym ')'
       return e
+
+-- Ej 3)
+
+-- a)
 
 type Env = [(String, Int)]
 type InterM = Reader Env Int

@@ -59,6 +59,10 @@ interp (Var v) = do
 
 -- b)
 
+instance Show Error where
+  show ErrorDivZero = "división por cero"
+  show (ErrorUnbound s) = s
+
 evalE :: Expr -> Either Error Int
 evalE e = join $ runExceptT $ runReaderT (runIdentityT (interp e)) []
 
@@ -67,30 +71,6 @@ evalE e = join $ runExceptT $ runReaderT (runIdentityT (interp e)) []
 data Res a = DivZero
            | Unbound String
            | Res a
-
-newtype ResT m a = ResT {runResT :: m (Res a)}
-
-instance Monad m => Functor (ResT m) where
-    fmap f (ResT g) = ResT $ do {resa <- g; return $ fres f resa}
-        where fres f (Res a) = Res $ f a
-              fres _ DivZero = DivZero
-              fres _ (Unbound s) = Unbound s
-
-instance Monad m => Applicative (ResT m) where
-    pure a = ResT $ return (Res a)
-    (ResT g) <*> (ResT k) = ResT $ do {resf <- g; resa <- k; return $ fres resf resa}
-        where fres (Res f) (Res a) = Res $ f a
-              fres _ DivZero = DivZero
-              fres _ (Unbound s) = Unbound s
-              fres DivZero _ = DivZero
-              fres (Unbound s) _ = Unbound s
-
-instance Monad m => Monad (ResT m) where
-    return a = ResT $ return (Res a)
-    m >>= f  = ResT $ do {resa <- runResT m; runResT (fres f resa)}
-        where fres f (Res a) = f a
-              fres _ DivZero = ResT $ return DivZero
-              fres _ (Unbound s) = ResT $ return $ Unbound s
 
 instance Functor Res where
     fmap f (Res a) = Res (f a)
@@ -107,21 +87,53 @@ instance Applicative Res where
 
 instance Monad Res where
     return a = Res a
-    m >>= f  = do {resa <- m; f resa}
+    DivZero >>= _ = DivZero
+    (Unbound s) >>= _ = Unbound s
+    (Res a) >>= f = f a
+    
 
-instance MonadError Error (ResT Res) where
-  throwError (ErrorUnbound s) = ResT (Unbound s) 
-  throwError ErrorDivZero = ResT DivZero 
+newtype ResT m a = ResT {runResT :: m (Res a)}
+
+instance Monad m => Functor (ResT m) where
+    fmap f (ResT g) = ResT $ do {a <- g; return $ fres f a}
+        where fres f (Res a) = Res $ f a
+              fres _ DivZero = DivZero
+              fres _ (Unbound s) = Unbound s
+
+instance Monad m => Applicative (ResT m) where
+    pure a = ResT $ return (Res a)
+    (ResT g) <*> (ResT k) = ResT $ do {f <- g; a <- k; return $ fres f a}
+        where fres (Res f) (Res a) = Res $ f a
+              fres _ DivZero = DivZero
+              fres _ (Unbound s) = Unbound s
+              fres DivZero _ = DivZero
+              fres (Unbound s) _ = Unbound s
+
+instance Monad m => Monad (ResT m) where
+    return a = ResT $ return (Res a)
+    m >>= f  = ResT $ do {a <- runResT m; runResT (fres f a)}
+        where fres f (Res a) = f a
+              fres _ DivZero = ResT $ return DivZero
+              fres _ (Unbound s) = ResT $ return $ Unbound s
+
+-- d)
+
+instance Monad m => MonadError Error (ResT m) where
+  throwError (ErrorUnbound s) = ResT $ return $ Unbound s
+  throwError ErrorDivZero = ResT $ return DivZero
   
-  catchError (ResT (Unbound s)) _ = ResT (Unbound s)
-  catchError (ResT DivZero) _ = ResT DivZero
-  catchError (ResT (Res r)) _ = ResT (Res r)
+  catchError (ResT m) _ = ResT m
 
 evalR :: Expr -> Res Int
 evalR e = join $ runResT $ runReaderT (runIdentityT (interp e)) []
 
+instance Show (Res Int) where
+    show (Res a) = show a
+    show (Unbound s) = s
+    show DivZero = "Division por cero"
 
-instance Show Error where
-  show ErrorDivZero = "división por cero"
-  show (ErrorUnbound s) = s
+
+
+
+
 

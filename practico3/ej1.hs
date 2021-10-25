@@ -1,5 +1,7 @@
 import Control.Monad.State
 
+-- Contraejemplo:
+
 f = do
   x <- g1
   y <- g2
@@ -26,8 +28,10 @@ g1 = do
   state <- put 1
   return get state
 
-g2 :: State Int ()
-g2 = modify (+ 1)
+g2 :: State Int Int
+g2 = do
+    state <- modify (+ 1)
+    return get state
 
 g3 :: State Int Int
 g3 = get

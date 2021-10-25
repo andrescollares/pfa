@@ -1,6 +1,8 @@
 import Control.Monad.Reader
 import GHC.Base hiding ((<|>))
 
+-- Ejercicio 2
+
 data Expr
   = Let String Expr Expr
   | Add Expr Expr
@@ -132,7 +134,7 @@ parser =
       pSym ')'
       return e
 
--- Ej 3)
+-- Ejercicio 3
 
 -- a)
 

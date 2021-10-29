@@ -1,0 +1,60 @@
+# Práctico 4
+
+## 1.
+
+### a)
+
+![1a](./ej1pfa.png)
+
+### b)
+
+![1](./ej1pfaab.png)
+
+$\beta$-redexes
+
+### c)
+
+Por el corolario del teorema de Church-Rosser el termino tiene una única forma normal.
+
+### d)
+
+Primer termino:
+
+- $\lambda x.\lambda y.y~x \rightarrow_\beta \lambda y.y$
+
+> $(\lambda y.y)~[x := x] = \lambda y.y$
+
+Segundo termino:
+
+Primera parte:
+
+- $\lambda x.(\lambda y.x~(y~y))~(\lambda y.x~(y~y))
+\rightarrow_\beta \lambda z.(\lambda y.x~(y~y))~(y~y)$
+
+> $(\lambda y.x~(y~y))~[x := \lambda y.x~(y~y)]
+= \lambda z.(\lambda y.x~(y~y))~(y~y)$
+
+- $\lambda z.(\lambda y.x~(y~y))~(y~y) \rightarrow_\beta \lambda y.x~(y~y)$
+
+> $(\lambda y.x~(y~y))~[z := (y~y)] = \lambda y.x~(y~y)$
+
+- $\lambda y.x~(y~y) \rightarrow_\beta x$
+
+> $x~[y := (y~y)] = x$
+
+Segunda parte:
+
+- $\lambda x.x~z \rightarrow_\beta z$
+
+> $x~[x := z] = z$
+
+Ahora:
+
+- $(\lambda y.y)~(x~z) \rightarrow_\beta (x~z)$
+
+> $(y~[y := (x~z)]) = (x~z)$
+
+El tercer termino no se puede reducir, por lo tanto el resultado es:
+
+- $(x~z) (\lambda x \lambda y . y)$
+

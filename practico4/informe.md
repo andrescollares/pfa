@@ -1,6 +1,6 @@
 # Práctico 4
 
-## 1.
+## 1
 
 ### a)
 
@@ -58,3 +58,49 @@ El tercer termino no se puede reducir, por lo tanto el resultado es:
 
 - $(x~z) (\lambda x \lambda y . y)$
 
+## 2
+
+$Pair ~a ~b = \forall \alpha .~(a \rightarrow b \rightarrow \alpha) 
+\rightarrow \alpha$
+
+$Nat = \forall \alpha .~(\alpha \rightarrow \alpha) \rightarrow 
+\alpha \rightarrow \alpha$
+
+### a)
+
+$SWAP ~: ~Pair ~a ~b \rightarrow Pair ~b ~a$
+
+$SWAP = \lambda p^{Pair ~a ~b}. ~PAIR ~(SND ~p) ~(FST ~p)$
+
+### b)
+
+$DUP~ : ~Nat \rightarrow ~Nat$
+
+$DUP = \lambda n^{Nat} . ~foldN ~Nat ~S ~n ~n$
+
+### c)
+
+$EXP2 ~: ~Nat \rightarrow ~Nat$
+
+$EXP2 = \lambda n^{Nat} . ~foldN ~Nat ~(PLUS ~n) ~Z ~n$
+
+### d)
+
+$PRED ~: ~Nat \rightarrow ~Nat$
+
+$PRED = \lambda n^{Nat} . ~foldN ~Nat ~(\lambda m^{Nat}. ~IF\_THEN\_ELSE ~Nat$
+??
+
+Se puede hacer pattern matching sobre S n así nomas con lambda? 
+
+Hay que hacer todo un metodo raro creando un par y poniendo una función delante
+de la otra, [ver acá](https://gist.github.com/Sam-Serpoosh/30c558900df69291ff35128c1fe3b886).
+
+## 3
+
+$fix ~f = f ~(fix ~f)$
+
+$suma ~: ~Nat \rightarrow ~Nat$
+
+$suma = fix ~(\lambda f. \lambda n^{Nat} . ~IF\_THEN\_ELSE ~Nat ~(ISZERO ~n) ~Z
+~(PLUS ~n ~(f ~(PRED ~n)))$

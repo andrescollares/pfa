@@ -89,9 +89,8 @@ $EXP2 = \lambda n^{Nat} . ~foldN ~Nat ~(PLUS ~n) ~Z ~n$
 $PRED ~: ~Nat \rightarrow ~Nat$
 
 $PRED = \lambda n^{Nat} . ~foldN ~Nat ~(\lambda m^{Nat}. ~IF\_THEN\_ELSE ~Nat$
-??
 
-Se puede hacer pattern matching sobre S n así nomas con lambda? 
+Se puede hacer pattern matching sobre S n así nomas con lambda? NO
 
 Hay que hacer todo un metodo raro creando un par y poniendo una función delante
 de la otra, [ver acá](https://gist.github.com/Sam-Serpoosh/30c558900df69291ff35128c1fe3b886).

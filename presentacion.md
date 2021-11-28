@@ -70,5 +70,3 @@ El código on chain es enviado dentro de una transacción, y una vez que lleag a
 Una de las ventajas que tiene programar smart contracts con Plutus es que tiene un playground donde se puede probar el código con una interfaz bastante amigable y fácil de utilizar. En donde se puede probar el código de una manera un poco más interactiva. Dentro del playground hay varios ejemplos de smart contracts implementados.
 
 Por ejemplo vamos a mostrar como se vería una transacción sencilla de cryptomonedas de una billetera electronica a otra. Este es el caso más sencillo.
-
-Por otro lado también se podría hacer algo un poco más complejo como 

@@ -20,3 +20,14 @@ safeFoldr1 :: (a -> a -> a) -> SafeList a NonEmpty -> a
 safeFoldr1 f (Cons a (Cons a' Nil)) = a `f` a'
 safeFoldr1 f (Cons a (Cons a' ls)) = a `f` safeFoldr1 f (Cons a' ls)
 safeFoldr1 _ (Cons a Nil) = a
+
+-- d)
+data Zero
+data Succ a
+data Vec a n where
+    NilV :: Vec a Zero
+    ConsV :: a -> Vec a n -> Vec a (Succ n)
+
+toSafe :: Vec a (Succ n) -> SafeList a NonEmpty 
+toSafe (ConsV a (ConsV a' ls)) = Cons a (toSafe (ConsV a' ls))
+toSafe (ConsV a NilV) = Cons a Nil

@@ -94,32 +94,3 @@ Se puede hacer pattern matching sobre S n así nomas con lambda? NO
 
 Hay que hacer todo un metodo raro creando un par y poniendo una función delante
 de la otra, [ver acá](https://gist.github.com/Sam-Serpoosh/30c558900df69291ff35128c1fe3b886).
-
-## 3
-
-$fix ~f = f ~(fix ~f)$
-
-Mal:
-
-$suma ~: ~Nat \rightarrow ~Nat$
-
-$suma = fix ~(\lambda f. \lambda n^{Nat} . ~IF\_THEN\_ELSE ~Nat ~(ISZERO ~n) ~Z
-~(PLUS ~n ~(f ~(PRED ~n)))$
-
-Hay que hacer código haskell.
-
-## Presentación
-
-Introducción muy abstracta y corta de blockchain o dar la mirada desde otro lado.
-Hablar de un smart contract y vincular con Plutus, hablar de las caracteristicas,
-las mónadas ox que tienen, qué es lo especial que tiene. O quizá hablando el
-problema y porqué se eligió programación funcional para el lenguaje de los contratos.
-
-Plutus es muy parecido a haskell por lo tanto no hay que explicarlo tanto.
-
-Charlas que presenta la gente, Chacrabarsky, Tompson, abstractas.
-IOHK -> articulos.
-https://docs.cardano.org/plutus/learn-about-plutus
-
-NO intentar programar un smart contract.
-https://iohk.io/en/research/library/papers/functional-blockchain-contracts/

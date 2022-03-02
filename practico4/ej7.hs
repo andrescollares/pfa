@@ -6,6 +6,11 @@ data SafeList a b where
     Nil :: SafeList a Empty
     Cons :: a -> SafeList a b -> SafeList a NonEmpty
 
+instance Show a => Show (SafeList a b) where
+    show (Cons a Nil) = show a
+    show (Cons a ls) = show a ++ " " ++ show ls
+    show Nil = ""
+
 -- a)
 safeHead :: SafeList a NonEmpty -> a
 safeHead (Cons a ls) = a
